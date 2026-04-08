@@ -1,0 +1,28 @@
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Editor directories
+.vscode/
+.idea/
+
+# Streamlit runtime and config
+.streamlit/*
+!.streamlit/config.toml
+
+# Test caches
+.pytest_cache/
+.coverage
+
+# Environment files
+.env
+
+# OS files
+.DS_Store
