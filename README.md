@@ -5,6 +5,16 @@ SourceSync is a candidate intelligence tool built to analyze resumes and candida
 ## Project structure
 
 SourceSync/
+├── backend/                # FastAPI backend for React frontend
+│   └── app.py              # API endpoints for analysis and X-ray search
+├── frontend/               # React frontend application
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   └── src/
+│       ├── App.jsx
+│       ├── main.jsx
+│       └── index.css
 ├── .streamlit/
 │   └── config.toml         # Custom themes for the Streamlit UI
 ├── src/                    # All source package code
@@ -26,7 +36,8 @@ SourceSync/
 │   └── test_scraper.py
 ├── .env                    # Private credentials (DO NOT COMMIT)
 ├── .gitignore              # Ignored files for Git
-├── app.py                  # Streamlit dashboard entrypoint
+├── backend/                # FastAPI backend for React frontend
+│   └── app.py              # API endpoints for analysis and X-ray search
 ├── test_setup.py          # Setup verification script
 ├── requirements.txt        # Project dependencies
 └── README.md               # This documentation
@@ -61,10 +72,21 @@ python test_setup.py
 - ✅ Parser works! (with sample extracted data)
 - ✅ Search works! Found X candidates (may be 0 for test query)
 
-4. Run the Streamlit app:
+## Run the React + FastAPI UI
+
+1. Start the backend API:
    ```bash
-   streamlit run app.py
+   uvicorn backend.app:app --reload
    ```
+
+2. In another terminal, install frontend dependencies and start the React app:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+3. Open the local Vite preview URL shown in the terminal (usually `http://localhost:5173`).
 
 ## Usage Examples
 

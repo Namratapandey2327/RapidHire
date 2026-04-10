@@ -13,6 +13,9 @@ env/
 .vscode/
 .idea/
 
+# Node modules
+frontend/node_modules/
+
 # Streamlit runtime and config
 .streamlit/*
 !.streamlit/config.toml

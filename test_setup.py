@@ -91,8 +91,8 @@ def main():
     if passed == len(tests):
         print("🎉 All tests passed! SourceSync is ready to use.")
         print("\nTry these commands:")
-        print("  streamlit run app.py")
-        print("  python -m sourcesync --search 'Software Engineer Remote Python'")
+        print("  uvicorn backend.app:app --reload")
+        print("  cd frontend && npm run dev")
     else:
         print("⚠️  Some tests failed. Please fix the issues above.")
 
