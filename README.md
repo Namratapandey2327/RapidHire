@@ -15,8 +15,6 @@ SourceSync/
 │       ├── App.jsx
 │       ├── main.jsx
 │       └── index.css
-├── .streamlit/
-│   └── config.toml         # Custom themes for the Streamlit UI
 ├── src/                    # All source package code
 │   └── sourcesync/         # Main Python package
 │       ├── __init__.py     # Package entrypoint
@@ -104,7 +102,7 @@ python -m sourcesync --search "Software Engineer Remote MuleSoft OpenShift"
 
 ### Candidate Analysis
 - **Enhanced Visa Status Detection**: Identifies H1B, Green Card, OPT/CPT, TN Visa, F1 Visa, H4 Visa, and sponsorship needs with robust regex patterns
-- **Color-Coded Visa Status**: Visual indicators in Streamlit dashboard (Green for Citizen, Red for H1B/Sponsorship, etc.)
+- **Color-Coded Visa Status**: Visual indicators in the app dashboard (Green for Citizen, Red for H1B/Sponsorship, etc.)
 - **Location Detection**: Recognizes Remote, Offshore, Hybrid, Onsite, USA, India
 - **Experience Estimation**: Extracts years of experience from text
 - **Skill Extraction**: Identifies technical skills from a comprehensive keyword list or pasted sections

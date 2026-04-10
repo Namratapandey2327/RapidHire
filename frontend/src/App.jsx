@@ -3,9 +3,8 @@ import { useState } from "react";
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 function App() {
-  const [bioText, setBioText] = useState("");
   const [jdText, setJdText] = useState("");
-  const [analysis, setAnalysis] = useState(null);
+  const [parsedKeywords, setParsedKeywords] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -31,15 +30,9 @@ function App() {
     }
   };
 
-  const analyzeCandidate = async () => {
-    const data = await callApi("/analyze", { text: bioText });
-    setAnalysis(data);
-    setSearchResults(null);
-  };
-
   const performSearch = async () => {
     const data = await callApi("/xray-search", { text: jdText });
-    setAnalysis(data.parsed_keywords);
+    setParsedKeywords(data.parsed_keywords);
     setSearchResults(data.results);
   };
 
@@ -47,85 +40,75 @@ function App() {
     <div className="app-shell">
       <header className="topbar">
         <h1>SourceSync</h1>
-        <p>React UI for candidate analysis and X-ray search.</p>
+        <p>Paste a job description and get parsed keywords plus X-ray candidate links.</p>
       </header>
 
       <main>
         <section className="pane">
-          <h2>Quick Candidate Analysis</h2>
-          <textarea
-            value={bioText}
-            placeholder="Paste candidate About / Experience text here"
-            onChange={(event) => setBioText(event.target.value)}
-          />
-          <button onClick={analyzeCandidate} disabled={!bioText || loading}>
-            Analyze Candidate
-          </button>
-        </section>
-
-        <section className="pane">
-          <h2>X-ray Search</h2>
+          <h2>Job Description Input</h2>
           <textarea
             value={jdText}
-            placeholder="Paste job description to extract keywords for X-ray search"
+            placeholder="Paste job description here"
             onChange={(event) => setJdText(event.target.value)}
           />
           <button onClick={performSearch} disabled={!jdText || loading}>
-            Perform X-ray Search
+            Generate Keywords & X-ray Links
           </button>
         </section>
 
         {loading && <div className="notice">Loading…</div>}
         {error && <div className="error">{error}</div>}
 
-        {analysis && (
+        {parsedKeywords && (
           <section className="results">
-            <h2>Analysis Results</h2>
+            <h2>Parsed Keywords</h2>
             <div className="result-grid">
               <div>
-                <strong>Visa Status</strong>
-                <p>{analysis.Visa}</p>
-              </div>
-              <div>
                 <strong>Job Title</strong>
-                <p>{analysis["Job Title"] || "Undetermined"}</p>
-              </div>
-              <div>
-                <strong>Experience</strong>
-                <p>{analysis.Experience}</p>
+                <p>{parsedKeywords["Job Title"] || "Undetermined"}</p>
               </div>
               <div>
                 <strong>Location</strong>
-                <p>{analysis.Location}</p>
+                <p>{parsedKeywords.Location || "Undetermined"}</p>
+              </div>
+              <div>
+                <strong>Experience</strong>
+                <p>{parsedKeywords.Experience || "N/A"}</p>
+              </div>
+              <div>
+                <strong>Visa</strong>
+                <p>{parsedKeywords.Visa || "Undetermined"}</p>
               </div>
             </div>
             <div>
               <strong>Skills</strong>
-              <p>{analysis.Skills?.length ? analysis.Skills.join(", ") : "None detected"}</p>
+              <p>{parsedKeywords.Skills?.length ? parsedKeywords.Skills.join(", ") : "None detected"}</p>
             </div>
           </section>
         )}
 
         {searchResults && (
           <section className="results">
-            <h2>X-ray Search Results</h2>
+            <h2>X-ray Search Links</h2>
             {searchResults.length ? (
               <ul className="search-list">
                 {searchResults.map((result, index) => (
                   <li key={index}>
-                    <strong>{result.name || "Unnamed candidate"}</strong>
+                    <strong>{result.name || "Candidate"}</strong>
                     <p>{result.headline}</p>
-                    {result.profile_url && (
+                    {result.profile_url ? (
                       <a href={result.profile_url} target="_blank" rel="noreferrer">
-                        View profile
+                        Open X-ray profile
                       </a>
+                    ) : (
+                      <span>No profile link available</span>
                     )}
                     <p className="source-label">Source: {result.source}</p>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p>No candidates found for this search.</p>
+              <p>No X-ray candidates were found for this description.</p>
             )}
           </section>
         )}
