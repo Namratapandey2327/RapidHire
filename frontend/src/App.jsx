@@ -3,6 +3,7 @@ import { useState } from "react";
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 function App() {
+  console.log("SourceSync React app mounted.");
   const [jdText, setJdText] = useState("");
   const [parsedKeywords, setParsedKeywords] = useState(null);
   const [searchResults, setSearchResults] = useState(null);

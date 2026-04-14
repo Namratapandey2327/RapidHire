@@ -72,6 +72,19 @@ python test_setup.py
 
 ## Run the React + FastAPI UI
 
+### Option 1: One command for both backend and frontend
+
+From the repo root:
+```bash
+bash start-dev.sh
+```
+
+This starts:
+- backend: `http://127.0.0.1:8000`
+- frontend: `http://127.0.0.1:5173`
+
+### Option 2: Start separately
+
 1. Start the backend API:
    ```bash
    uvicorn backend.app:app --reload
