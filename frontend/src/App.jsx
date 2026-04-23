@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
@@ -10,6 +10,21 @@ function App() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Auth states
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [token, setToken] = useState(sessionStorage.getItem('token') || '');
+  const [authMode, setAuthMode] = useState('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [authError, setAuthError] = useState(null);
+  const [authLoading, setAuthLoading] = useState(false);
+
+  useEffect(() => {
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, [token]);
+
   const callApi = async (path, body) => {
     setError(null);
     setLoading(true);
@@ -17,7 +32,10 @@ function App() {
     try {
       const response = await fetch(`${API_BASE}${path}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token && { "Authorization": `Bearer ${token}` })
+        },
         body: JSON.stringify(body),
       });
 
@@ -31,17 +49,91 @@ function App() {
     }
   };
 
+  const handleAuth = async (mode) => {
+    setAuthError(null);
+    setAuthLoading(true);
+    try {
+      const response = await fetch(`${API_BASE}/${mode}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.detail || "Auth failed.");
+      }
+      if (mode === 'login') {
+        setToken(data.access_token);
+        sessionStorage.setItem('token', data.access_token);
+        setIsLoggedIn(true);
+      } else {
+        alert("Registered successfully! Please login.");
+        setAuthMode('login');
+      }
+    } catch (err) {
+      setAuthError(err.message);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const logout = () => {
+    setToken('');
+    sessionStorage.removeItem('token');
+    setIsLoggedIn(false);
+    setParsedKeywords(null);
+    setSearchResults(null);
+    setJdText('');
+  };
+
   const performSearch = async () => {
     const data = await callApi("/xray-search", { text: jdText });
     setParsedKeywords(data.parsed_keywords);
     setSearchResults(data.results);
   };
 
+  if (!isLoggedIn) {
+    return (
+      <div className="app-shell">
+        <header className="topbar">
+          <h1>SourceSync</h1>
+          <p>Login or register to access the application.</p>
+        </header>
+        <main>
+          <section className="pane">
+            <h2>{authMode === 'login' ? 'Login' : 'Register'}</h2>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button onClick={() => handleAuth(authMode)} disabled={authLoading}>
+              {authMode === 'login' ? 'Login' : 'Register'}
+            </button>
+            <button onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}>
+              Switch to {authMode === 'login' ? 'Register' : 'Login'}
+            </button>
+            {authLoading && <div className="notice">Authenticating…</div>}
+            {authError && <div className="error">{authError}</div>}
+          </section>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="app-shell">
       <header className="topbar">
         <h1>SourceSync</h1>
         <p>Paste a job description and get parsed keywords plus X-ray candidate links.</p>
+        <button onClick={logout}>Logout</button>
       </header>
 
       <main>
